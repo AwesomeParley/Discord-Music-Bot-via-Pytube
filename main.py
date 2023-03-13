@@ -14,6 +14,7 @@ import random
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
 queue = []
+nowPlaying = ""
 #when the bot gets an event
 @bot.event
 #get message
@@ -182,7 +183,15 @@ async def on_message(message):
 #bot queue command
     elif message.content == 'bot queue':
         i = 0
-        text = ""
+        text = "Now Playing:\n"
+        yt = YouTube(nowPlaying)
+        while i < 10:
+            try:
+                text = text + yt.title + "\n\nQueue:\n"
+                break
+            except: 
+                i =+ 1
+        i = 0
         while i < len(queue):
             x = 0
             text = text + f"{i+1}: "
@@ -195,7 +204,7 @@ async def on_message(message):
                 except: 
                     x =+ 1
             i+=1
-        await message.channel.send("Queue:\n" + text)
+        await message.channel.send(text)
         return 
 
 #askURL def
@@ -225,6 +234,8 @@ async def playAudio(message, vc, url):
         except:
             pass
         yt = YouTube(url)
+        global nowPlaying
+        nowPlaying = url
         audio_stream = yt.streams.filter(only_audio=True).first()
         audio_path = 'audio.mp3'
         audio_stream.download(output_path='./', filename=audio_path)
@@ -342,12 +353,13 @@ async def nextQ():
 #skip def
 async def skip(message, vc):
     global queue
-    if not (queue[0] is None):
+    if not (len(queue) == 0):
         vc.stop()
         await playAudio(message, vc, (await nextQ()))
         return
     else:
         await message.channel.send("That's the end of the queue!")
+        vc.stop()
         return
 
 
@@ -358,8 +370,6 @@ async def on_voice_state_update(member, before, after):
     if member.id == bot.user.id and before.deaf and not after.deaf:
         # If the bot was undeafened by someone, re-deafen it
         await member.edit(deafen=True)
-
-
 
 #Bot Username + Password
 bot.run('Your Token Here')
