@@ -39,11 +39,17 @@ async def on_message(message):
                 await message.channel.send("I am already connected to your voice channel.")
             else:
                 #move to user's channel
-                await message.add_reaction('✅')
+                try:
+                    await message.add_reaction('✅')
+                except:
+                    pass
                 await vc.move_to(voice_channel)
         else:
             #connect
-            await message.add_reaction('✅')
+            try:
+                await message.add_reaction('✅')
+            except:
+                pass
             vc = await voice_channel.connect()
             #checks if there is music playing or not and if no music is played after 2 minutes, the bot leaves.
         bot.loop.create_task(check_for_idle(vc, 120))
@@ -61,7 +67,10 @@ async def on_message(message):
         vc.stop()
 
         #leaves vc
-        await message.add_reaction('👋')
+        try:
+            await message.add_reaction('👋')
+        except:
+            pass
         await vc.disconnect()
         return
 
@@ -78,7 +87,10 @@ async def on_message(message):
         
         #if the amount of words is bigger than 2 and word 0 is bot and word 1 is play
         if len(words) > 2:
-            await message.add_reaction('⏳')
+            try:
+                await message.add_reaction('⏳')
+            except:
+                pass
             url = await urlOrSearch(words, 2, message)
         else:
             #store the URL as None because there was no 3rd word.
@@ -100,7 +112,10 @@ async def on_message(message):
         if  (not(vc is None)) and vc.is_playing():
             queue.append(url)
             url = str(queue[len(queue)-1])
-            await message.add_reaction('➕')
+            try:
+                await message.add_reaction('➕')
+            except:
+                pass
             i=0
             while i <= 10:
                 try:
@@ -144,7 +159,10 @@ async def on_message(message):
         else:
             queue = []
             vc.stop()
-            await message.add_reaction('🛑')
+            try:
+                await message.add_reaction('🛑')
+            except:
+                pass
             return
 
 #bot skip command
@@ -155,7 +173,10 @@ async def on_message(message):
             return
         else:
             await skip(message, vc)
-            await message.add_reaction('⏭️')
+            try:
+                await message.add_reaction('⏭️')
+            except:
+                pass
             return
 
 #askURL def
@@ -180,7 +201,10 @@ async def askURL(message):
 async def playAudio(message, vc, url):
     try:
         # Download the audio using pytube
-        await message.add_reaction('📥')
+        try:
+            await message.add_reaction('📥')
+        except:
+            pass
         yt = YouTube(url)
         audio_stream = yt.streams.filter(only_audio=True).first()
         audio_path = 'audio.mp3'
@@ -188,7 +212,10 @@ async def playAudio(message, vc, url):
 
         # Play the audio in the voice channel
         source = FFmpegPCMAudio(audio_path)
-        await message.add_reaction('🎶')
+        try:
+            await message.add_reaction('🎶')
+        except:
+            pass
         sentM = await message.channel.send(f"Now playing: {yt.title}")
         try:
             await message.remove_reaction('⏳', bot.user)
@@ -198,7 +225,10 @@ async def playAudio(message, vc, url):
             await message.remove_reaction('🔎', bot.user)
         except:
             pass
-        await message.remove_reaction('📥', bot.user)
+        try:
+            await message.remove_reaction('📥', bot.user)
+        except:
+            pass
         vc.play(source, after=lambda e: print(f'Player error: {e}') if e else bot.loop.create_task(afterPlay(sentM, message, vc)))
         
 
@@ -214,7 +244,10 @@ async def urlOrSearch(words, n, message):
     else:
         searchTerm = ' '.join(words[n:],)
         #search for video
-        await message.add_reaction('🔎')
+        try:
+            await message.add_reaction('🔎')
+        except:
+            pass
         search_results = Search(searchTerm)
         url = search_results.results[0].watch_url
         i=1
@@ -253,7 +286,10 @@ async def checkIfUnder30min(url, message):
 #afterPlay def
 async def afterPlay(sentM, message, vc):
     # Add a thumbs up reaction to the bot's message
-    await sentM.add_reaction('🏁')
+    try:
+        await sentM.add_reaction('🏁')
+    except:
+        pass
     global queue
     if len(queue) > 0 and not vc.is_playing(): 
         await playAudio(message, vc, (await nextQ()))
@@ -307,4 +343,4 @@ async def on_voice_state_update(member, before, after):
 
 
 #Bot Username + Password
-bot.run('Put Bot Token Here')
+bot.run('NzU5NDc3NjU3NDM1MzczNTk5.GjLhwc.yMaZBdXmPGTvKyNxCtqJ-kIJ9K1WKyxhwZuR7Q')
