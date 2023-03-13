@@ -343,4 +343,4 @@ async def on_voice_state_update(member, before, after):
 
 
 #Bot Username + Password
-bot.run('NzU5NDc3NjU3NDM1MzczNTk5.GjLhwc.yMaZBdXmPGTvKyNxCtqJ-kIJ9K1WKyxhwZuR7Q')
+bot.run('Your Token Here')
