@@ -179,6 +179,25 @@ async def on_message(message):
                 pass
             return
 
+#bot queue command
+    elif message.content == 'bot queue':
+        i = 0
+        text = ""
+        while i < len(queue):
+            x = 0
+            text = text + f"{i+1}: "
+            while x < 10:
+                url = queue[i]
+                yt = YouTube(url)
+                try:
+                    text = text + yt.title + "\n"
+                    break
+                except: 
+                    x =+ 1
+            i+=1
+        await message.channel.send("Queue:\n" + text)
+        return 
+
 #askURL def
 async def askURL(message):
     await message.channel.send("What do you want me to play?")
