@@ -15,6 +15,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', intents=intents)
 queue = []
 nowPlaying = ""
+sentM = None
 #when the bot gets an event
 @bot.event
 #get message
@@ -259,7 +260,7 @@ async def playAudio(message, vc, url):
             await message.remove_reaction('📥', bot.user)
         except:
             pass
-        vc.play(source, after=lambda e: print(f'Player error: {e}') if e else bot.loop.create_task(afterPlay(sentM, message, vc)))
+        vc.play(source, after=lambda e: print(f'Player error: {e}') if e else bot.loop.create_task(afterPlay(sentM, message, vc, False)))
         
 
     except Exception as e:
@@ -314,15 +315,20 @@ async def checkIfUnder30min(url, message):
         return False
 
 #afterPlay def
-async def afterPlay(sentM, message, vc):
-    # Add a thumbs up reaction to the bot's message
-    try:
-        await sentM.add_reaction('🏁')
-    except:
-        pass
-    global queue
-    if len(queue) > 0 and not vc.is_playing(): 
-        await playAudio(message, vc, (await nextQ()))
+async def afterPlay(sentM, message, vc, skip):
+    if skip:
+        # If the audio was stopped prematurely
+        if len(queue) > 0: 
+            await playAudio(message, vc, (await nextQ()))
+    else:
+        await asyncio.sleep(2)
+        if vc.is_playing():
+            try:
+                await sentM.add_reaction('🏁')
+            except:
+                pass
+            if len(queue) > 0: 
+                await playAudio(message, vc, (await nextQ()))
         return
 
 #check_for_idle def
@@ -355,7 +361,7 @@ async def skip(message, vc):
     global queue
     if not (len(queue) == 0):
         vc.stop()
-        await playAudio(message, vc, (await nextQ()))
+        await afterPlay(sentM, message, vc, True)
         return
     else:
         await message.channel.send("That's the end of the queue!")
@@ -368,7 +374,7 @@ async def on_voice_state_update(member, before, after):
     if member == bot.user and after.channel is None:
         await before.channel.guild.change_voice_state(channel=None)
     if member.id == bot.user.id and before.deaf and not after.deaf:
-        # If the bot was undeafened by someone, re-deafen it
+        # If the bot was undeafened by someone, re-deafen it (uses less resources)
         await member.edit(deafen=True)
 
 #Bot Username + Password
