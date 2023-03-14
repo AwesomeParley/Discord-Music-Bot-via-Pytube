@@ -321,7 +321,7 @@ async def afterPlay(sentM, message, vc, skip):
         if len(queue) > 0: 
             await playAudio(message, vc, (await nextQ()))
     else:
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
         if not vc.is_playing():
             try:
                 await sentM.add_reaction('🏁')
