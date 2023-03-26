@@ -2,6 +2,7 @@
 import discord
 from discord.ext import commands
 from discord import FFmpegPCMAudio
+from discord import Embed
 #import pytube to download video audio and the search function
 from pytube import YouTube
 from pytube import Search
@@ -118,26 +119,32 @@ async def on_message(message):
                 await message.add_reaction('➕')
             except:
                 pass
-            i=0
-            while i <= 10:
-                try:
-                    yt = YouTube(url)
-                    await message.channel.send(f"Added {yt.title} to the queue")
-                    try:
-                        await message.remove_reaction('⏳', bot.user)
-                    except:
-                        pass
-                    try:
-                        await message.remove_reaction('🔎', bot.user)
-                    except:
-                        pass
-                    return
-                except:
-                    i+=1
-                    yt = None
-            if yt is None:
-                await message.channel.send(f"Added to the queue. (Couldn't get the title at this moment)")
-                return
+            yt = YouTube(url)
+            id = yt.video_id
+            video_title = yt.title
+            embed = Embed(title=yt.author, color=discord.Color.from_rgb(255, 0, 0))
+            embed.description = f"[{video_title}]({url})"
+            embed.set_image(url = "https://img.youtube.com/vi/"+id+"/mqdefault.jpg")
+            embed.set_footer(text=f"📃 Queue Position: {len(queue)}")
+            await message.channel.send(embed=embed)
+            try:
+                await message.remove_reaction('⏳', bot.user)
+            except:
+                pass
+            try:
+                await message.remove_reaction('🔎', bot.user)
+            except:
+                pass
+            try:
+                await message.remove_reaction('⏳', bot.user)
+            except:
+                pass
+            try:
+                await message.remove_reaction('🔎', bot.user)
+            except:
+                pass
+            await message.channel.send(f"Added to the queue. (Couldn't get the title at this moment)")
+            return
         voice_channel = message.author.voice.channel
         vc = message.guild.voice_client
 
@@ -247,7 +254,13 @@ async def playAudio(message, vc, url):
             await message.add_reaction('🎶')
         except:
             pass
-        sentM = await message.channel.send(f"Now playing: {yt.title}")
+        id = yt.video_id
+        video_title = yt.title
+        embed = Embed(title=yt.author, color=discord.Color.from_rgb(255, 0, 0))
+        embed.description = f"[{video_title}]({url})"
+        embed.set_image(url = "https://img.youtube.com/vi/"+id+"/mqdefault.jpg")
+        embed.set_footer(text=f"📃 Queue Position: {len(queue)}")
+        sentM = await message.channel.send("Now playing:", embed=embed)
         try:
             await message.remove_reaction('⏳', bot.user)
         except:
