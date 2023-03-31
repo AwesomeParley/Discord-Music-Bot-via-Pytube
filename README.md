@@ -12,8 +12,6 @@ If you want to try the bot out yourself, you need to download python, pytube, ff
 
 -bot play command to play any YouTube video in your Discord VC. 
 
--bot now playing command to know what is playing. 
-
 -bot join command to allow the bot to Join the VC (although it will automatically join when you ask it to play)
 
 -bot leave command to allow the bot to leave the VC (It will automatically leave when nothing is played for 2 minutes)
@@ -21,3 +19,7 @@ If you want to try the bot out yourself, you need to download python, pytube, ff
 -bot stop to stop the music.
 
 -bot skip to skip the song.
+
+## Coming soon:
+
+-bot now playing command to know what is playing. 
